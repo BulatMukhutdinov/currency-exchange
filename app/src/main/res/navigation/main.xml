@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@id/currencyList">
+
+    <fragment
+        android:id="@+id/currencyList"
+        android:name="tat.mukhutdinov.currencyexchange.currencylist.ui.CurrencyListFragment"
+        android:label="Currency list"
+        tools:layout="@layout/currency_list">
+        <action
+            android:id="@+id/to_exchangeRate"
+            app:destination="@id/exchangeRateList"
+            app:enterAnim="@anim/nav_enter_anim"
+            app:exitAnim="@anim/nav_exit_anim"
+            app:popEnterAnim="@anim/nav_pop_enter_anim"
+            app:popExitAnim="@anim/nav_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/exchangeRateList"
+        android:name="tat.mukhutdinov.currencyexchange.exchangeratelist.ui.ExchangeRateListFragment"
+        android:label="Exchange rate"
+        tools:layout="@layout/exchange_rate_list">
+
+        <argument
+            android:name="currency"
+            app:argType="tat.mukhutdinov.currencyexchange.exchangerate.model.ExchangeRate" />
+    </fragment>
+</navigation>
