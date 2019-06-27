@@ -21,7 +21,7 @@ import tat.mukhutdinov.currencyexchange.currencylist.ui.adapter.CurrencyListAdap
 import tat.mukhutdinov.currencyexchange.databinding.CurrencyListBinding
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.adapter.ExchangeRateDiffUtilCallback
 import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.observeViewState
-import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toast
+import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toastError
 
 class CurrencyListFragment : Fragment() {
 
@@ -75,9 +75,7 @@ class CurrencyListFragment : Fragment() {
                 diffResult.dispatchUpdatesTo(adapter)
             },
             loadingCallback = { refresh.isRefreshing = it },
-            errorCallback = {
-                context?.toast(it.localizedMessage)
-            }
+            errorCallback = { context?.toastError(it) }
         )
     }
 

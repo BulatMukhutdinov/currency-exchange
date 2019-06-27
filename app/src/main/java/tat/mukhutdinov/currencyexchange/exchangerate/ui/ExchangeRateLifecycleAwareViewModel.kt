@@ -1,10 +1,9 @@
 package tat.mukhutdinov.currencyexchange.exchangerate.ui
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import tat.mukhutdinov.currencyexchange.exchangerate.model.ExchangeRate
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.boundary.BuildExchangeRatesUseCase
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.boundary.UpdateLocalStorageUseCase
@@ -26,26 +25,23 @@ class ExchangeRateLifecycleAwareViewModel(
     }
 
     override fun update() {
-        val updateJob = viewModelScope.launch(exceptionHandler) {
-            withContext(Dispatchers.IO) {
-                updateLocalStorageUseCase.execute()
-            }
-        }
+        viewModelScope.launch(exceptionHandler + Dispatchers.IO) {
+            updateLocalStorageUseCase.execute()
 
-        viewModelScope.launch(exceptionHandler) {
-            updateJob.join()
-            buildRates()
+            withContext(Dispatchers.Main) {
+                buildRates()
+            }
         }
     }
 
+    @MainThread
     private fun buildRates() {
         rates.onStart()
 
-        viewModelScope.launch {
-            val rateList = withContext(Dispatchers.IO + exceptionHandler) {
+        viewModelScope.launch(exceptionHandler) {
+            val rateList = withContext(Dispatchers.IO) {
                 buildExchangeRateUseCase.execute(selected)
             }
-
             rates.onNext(rateList)
         }
     }

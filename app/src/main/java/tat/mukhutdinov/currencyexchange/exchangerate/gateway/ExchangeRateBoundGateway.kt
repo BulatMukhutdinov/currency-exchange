@@ -24,10 +24,9 @@ class ExchangeRateBoundGateway(
 
     override suspend fun update() {
         val response = exchangeRateApi.getRates()
+        val rates = exchangeRateConverter.fromResponseToEntity(response)
 
         dataBase.runInTransaction {
-            val rates = exchangeRateConverter.fromResponseToEntity(response)
-
             exchangeRateDao.clear()
             exchangeRateDao.insert(*rates.toTypedArray())
         }

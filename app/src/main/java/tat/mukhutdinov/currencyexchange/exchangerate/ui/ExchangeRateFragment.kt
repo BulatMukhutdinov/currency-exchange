@@ -18,7 +18,7 @@ import tat.mukhutdinov.currencyexchange.exchangerate.model.ExchangeRate
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.adapter.ExchangeRateAdapter
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.adapter.ExchangeRateDiffUtilCallback
 import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.observeViewState
-import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toast
+import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toastError
 
 class ExchangeRateFragment : Fragment() {
 
@@ -72,9 +72,7 @@ class ExchangeRateFragment : Fragment() {
                 diffResult.dispatchUpdatesTo(adapter)
             },
             loadingCallback = { refresh.isRefreshing = it },
-            errorCallback = {
-                context?.toast(it.localizedMessage)
-            }
+            errorCallback = { context?.toastError(it) }
         )
     }
 

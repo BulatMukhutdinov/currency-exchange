@@ -1,15 +1,12 @@
 package tat.mukhutdinov.currencyexchange.currencylist.ui
 
 import android.view.View
+import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import tat.mukhutdinov.currencyexchange.currencylist.ui.boundary.SearchCurrenciesUseCase
 import tat.mukhutdinov.currencyexchange.exchangerate.model.ExchangeRate
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.boundary.UpdateLocalStorageUseCase
@@ -40,35 +37,32 @@ class CurrencyListLifecycleAwareViewModel(
     }
 
     override fun update() {
-        val updateJob = viewModelScope.launch(exceptionHandler) {
-            // https://github.com/Kotlin/kotlinx.coroutines/issues/1035
-            withContext(Dispatchers.IO) {
-                updateLocalStorageUseCase.execute()
-            }
-        }
-
         viewModelScope.launch(exceptionHandler) {
-            updateJob.join()
-            onSearchClicked()
+            try {
+                withContext(Dispatchers.IO) {
+                    updateLocalStorageUseCase.execute()
+                }
+            } finally {
+                onSearchClicked()
+            }
         }
     }
 
+    @MainThread
     override fun onSearchClicked(view: View?) {
         view?.let { Utils.hideKeyboard(it) }
 
         currencies.onStart()
 
-        viewModelScope.launch {
-            withContext(Dispatchers.IO + exceptionHandler) {
-                searchJob?.cancelAndJoin()
+        viewModelScope.launch(exceptionHandler + Dispatchers.IO) {
+            searchJob?.cancelAndJoin()
 
-                searchJob = launch {
-                    val result = searchCurrenciesUseCase.execute(query.value.orEmpty())
+            searchJob = async {
+                val result = searchCurrenciesUseCase.execute(query.value.orEmpty())
 
-                    withContext(Dispatchers.Main) {
-                        currencies.onNext(result)
-                        isListEmpty.value = result.isEmpty()
-                    }
+                withContext(Dispatchers.Main) {
+                    currencies.onNext(result)
+                    isListEmpty.value = result.isEmpty()
                 }
             }
         }

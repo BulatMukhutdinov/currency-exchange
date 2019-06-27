@@ -24,14 +24,15 @@ fun <DataType> LiveData<DataState<DataType>>.observeViewState(
     })
 }
 
-fun Context.toast(text: String): Toast = Toast
-    .makeText(this, text, Toast.LENGTH_LONG)
+fun Context.toastError(throwable: Throwable): Toast = Toast
+    .makeText(this, throwable.localizedMessage ?: "Oops...An error has occurred", Toast.LENGTH_LONG)
     .apply { show() }
 
-fun ViewModel.getExceptionHandler(onException: (throwable: Throwable) -> Unit) = CoroutineExceptionHandler { _, throwable ->
-    viewModelScope.launch {
-        onException(throwable)
-    }
+fun ViewModel.getExceptionHandler(onException: (throwable: Throwable) -> Unit) =
+    CoroutineExceptionHandler { _, throwable ->
+        viewModelScope.launch {
+            onException(throwable)
+        }
 
-    Timber.e(throwable)
-}
+        Timber.e(throwable)
+    }

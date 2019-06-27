@@ -20,12 +20,6 @@ interface ExchangeRateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg rates: ExchangeRateToEurEntity)
 
-    @Update
-    fun update(vararg rates: ExchangeRateToEurEntity)
-
-    @Delete
-    fun delete(vararg rates: ExchangeRateToEurEntity)
-
     @Query("DELETE FROM ${ExchangeRateToEurEntity.TABLE_NAME}")
     fun clear()
 }

@@ -20,7 +20,7 @@ import tat.mukhutdinov.currencyexchange.exchangerate.model.ExchangeRate
 import tat.mukhutdinov.currencyexchange.exchangerate.ui.ExchangeRateFragment
 import tat.mukhutdinov.currencyexchange.exchangeratelist.adapter.ZoomOutPageTransformer
 import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.observeViewState
-import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toast
+import tat.mukhutdinov.currencyexchange.infrastructure.util.ui.toastError
 
 class ExchangeRateListFragment : Fragment() {
 
@@ -58,9 +58,7 @@ class ExchangeRateListFragment : Fragment() {
                     tab.text = it[position].name
                 }.attach()
             },
-            errorCallback = {
-                context?.toast(it.localizedMessage)
-            }
+            errorCallback = { context?.toastError(it) }
         )
     }
 
